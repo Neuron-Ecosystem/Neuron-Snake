@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta name="google-site-verification" content="rd3e2zvgvc_FYIuSOG01MEmWKf7cFx-92v6ptVrp_tM" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron Snake | Neuron Ecosystem</title>
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --secondary-color: #8f94fb;
+            --accent-color: #00b4db;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --success-color: #4CAF50;
+            --danger-color: #f44336;
+        }
+
+        .dark-theme {
+            --primary-color: #6368db;
+            --secondary-color: #9da1ff;
+            --accent-color: #00c6fb;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --success-color: #66bb6a;
+            --danger-color: #ef5350;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #e0e0e0 100%);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .dark-theme body {
+            background: linear-gradient(135deg, var(--bg-color) 0%, #2c2c2c 100%);
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-theme .card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(78, 84, 200, 0.3);
+        }
+
+        .menu-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(78, 84, 200, 0.4);
+        }
+
+        .menu-button:active {
+            transform: translateY(1px);
+        }
+
+        .back-button {
+            background: linear-gradient(to right, #6c757d, #868e96);
+        }
+
+        .back-button:hover {
+            box-shadow: 0 7px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        #game-canvas {
+            border-radius: 10px;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--border-color);
+        }
+
+        .dark-theme #game-canvas {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #score-display {
+            font-size: 24px;
+            margin: 15px 0;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .mobile-controls {
+            display: none;
+            margin-top: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .mobile-controls button {
+            padding: 15px;
+            font-size: 20px;
+            background: rgba(78, 84, 200, 0.7);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-controls button:active {
+            background: rgba(78, 84, 200, 0.9);
+        }
+
+        .switch-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+
+        .dark-theme .switch-container {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        select {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+        }
+
+        .footer-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .telegram-button {
+            background: linear-gradient(135deg, #0088cc, #00aced);
+            color: white;
+        }
+
+        .ecosystem-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: bold;
+            border: none;
+            outline: none;
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--success-color), #66bb6a);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .neuron-badge {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: grid;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px;
+            }
+            
+            .menu-button {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Главное меню -->
+        <div id="main-menu" class="card">
+            <div class="header">
+                <div class="logo">
+                    <div class="logo-icon">N</div>
+                    <h1>Neuron Snake</h1>
+                </div>
+                <p class="subtitle">Классическая игра в современном стиле</p>
+                <div class="neuron-badge">Neuron Ecosystem</div>
+            </div>
+            
+            <button id="play-button" class="menu-button">Играть</button>
+            <button id="settings-button" class="menu-button">Настройки</button>
+            <button id="exit-button" class="menu-button">Выход</button>
+            
+            <div class="footer">
+                <a href="https://t.me/neuron_ecosystem" target="_blank" class="footer-button telegram-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.135-.26.24-.52.24l.213-3.053 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                    </svg>
+                </a>
+                <a href="https://neuron-p2p.ru" target="_blank" class="footer-button ecosystem-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.18 5 4.05 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                </a>
+                <button class="footer-button ecosystem-button" id="support-button">?</button>
+            </div>
+            <div class="copy-notification" id="copy-notification">Скопировано!</div>
+        </div>
+        
+        <!-- Меню настроек -->
+        <div id="settings-menu" class="card" style="display: none;">
+            <div class="header">
+                <h1>Настройки</h1>
+                <p class="subtitle">Настройте игру под себя</p>
+            </div>
+            
+            <div class="switch-container">
+                <span>Темная тема</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="switch-container">
+                <span>Сложность</span>
+                <select id="difficulty-select">
+                    <option value="100">Легкая</option>
+                    <option value="80">Средняя</option>
+                    <option value="60">Сложная</option>
+                </select>
+            </div>
+            <button id="back-button" class="menu-button back-button">Назад</button>
+        </div>
+        
+        <!-- Игровой экран -->
+        <div id="game-container" style="display: none;">
+            <div class="card">
+                <div id="score-display">Очки: 0</div>
+                <canvas id="game-canvas" width="400" height="400"></canvas>
+                <div class="mobile-controls">
+                    <div></div>
+                    <button id="up-btn">↑</button>
+                    <div></div>
+                    <button id="left-btn">←</button>
+                    <div></div>
+                    <button id="right-btn">→</button>
+                    <div></div>
+                    <button id="down-btn">↓</button>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Меню после смерти -->
+        <div id="game-over-menu" class="card" style="display: none;">
+            <div class="header">
+                <h1>Игра окончена</h1>
+                <p class="subtitle">Попробуйте еще раз!</p>
+            </div>
+            <div id="final-score" style="font-size: 20px; margin: 20px 0; font-weight: 600;">Ваш счет: 0</div>
+            <button id="restart-button" class="menu-button">Играть снова</button>
+            <button id="main-menu-button" class="menu-button back-button">Главное меню</button>
+        </div>
+    </div>
+
+    <script>
+        // Элементы интерфейса
+        const mainMenu = document.getElementById('main-menu');
+        const settingsMenu = document.getElementById('settings-menu');
+        const gameContainer = document.getElementById('game-container');
+        const gameOverMenu = document.getElementById('game-over-menu');
+        const playButton = document.getElementById('play-button');
+        const settingsButton = document.getElementById('settings-button');
+        const exitButton = document.getElementById('exit-button');
+        const backButton = document.getElementById('back-button');
+        const restartButton = document.getElementById('restart-button');
+        const mainMenuButton = document.getElementById('main-menu-button');
+        const themeSwitch = document.getElementById('theme-switch');
+        const difficultySelect = document.getElementById('difficulty-select');
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScore = document.getElementById('final-score');
+        const supportButton = document.getElementById('support-button');
+        const copyNotification = document.getElementById('copy-notification');
+        
+        // Мобильное управление
+        const upBtn = document.getElementById('up-btn');
+        const leftBtn = document.getElementById('left-btn');
+        const rightBtn = document.getElementById('right-btn');
+        const downBtn = document.getElementById('down-btn');
+        
+        // Игровые переменные
+        let snake = [];
+        let food = {};
+        let direction = 'right';
+        let nextDirection = 'right';
+        let score = 0;
+        let gameInterval;
+        let gridSize = 20;
+        let gameSpeed = 100;
+        let gameStarted = false;
+        let isDarkTheme = false;
+        
+        // Инициализация игры
+        function initGame() {
+            // Создаем змейку
+            const startX = Math.floor(canvas.width / 2 / gridSize) * gridSize;
+            const startY = Math.floor(canvas.height / 2 / gridSize) * gridSize;
+            
+            snake = [
+                {x: startX, y: startY},
+                {x: startX - gridSize, y: startY},
+                {x: startX - gridSize * 2, y: startY}
+            ];
+            
+            direction = 'right';
+            nextDirection = 'right';
+            score = 0;
+            scoreDisplay.textContent = `Очки: ${score}`;
+            gameStarted = false;
+            
+            createFood();
+            drawGame();
+        }
+        
+        // Запуск игры
+        function startGame() {
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(gameLoop, gameSpeed);
+            gameStarted = true;
+        }
+        
+        // Создание еды
+        function createFood() {
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
+            };
+            
+            // Проверка, чтобы еда не появилась на змейке
+            for (let segment of snake) {
+                if (food.x === segment.x && food.y === segment.y) {
+                    return createFood();
+                }
+            }
+        }
+        
+        // Основной игровой цикл
+        function gameLoop() {
+            if (!gameStarted) return;
+            
+            direction = nextDirection;
+            const head = {x: snake[0].x, y: snake[0].y};
+            
+            // Движение головы
+            switch (direction) {
+                case 'up': head.y -= gridSize; break;
+                case 'down': head.y += gridSize; break;
+                case 'left': head.x -= gridSize; break;
+                case 'right': head.x += gridSize; break;
+            }
+            
+            // Проверка столкновений
+            if (
+                head.x < 0 || head.x >= canvas.width ||
+                head.y < 0 || head.y >= canvas.height ||
+                snake.some(segment => segment.x === head.x && segment.y === head.y)
+            ) {
+                gameOver();
+                return;
+            }
+            
+            // Добавляем новую голову
+            snake.unshift(head);
+            
+            // Проверка съедания еды
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                scoreDisplay.textContent = `Очки: ${score}`;
+                createFood();
+            } else {
+                // Удаляем хвост
+                snake.pop();
+            }
+            
+            drawGame();
+        }
+        
+        // Отрисовка игры
+        function drawGame() {
+            // Очистка canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Рисуем змейку
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
+            for (let segment of snake) {
+                ctx.fillRect(segment.x, segment.y, gridSize, gridSize);
+                ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--secondary-color');
+                ctx.strokeRect(segment.x, segment.y, gridSize, gridSize);
+            }
+            
+            // Рисуем еду
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent-color');
+            ctx.fillRect(food.x, food.y, gridSize, gridSize);
+        }
+        
+        // Конец игры
+        function gameOver() {
+            clearInterval(gameInterval);
+            finalScore.textContent = `Ваш счет: ${score}`;
+            gameContainer.style.display = 'none';
+            gameOverMenu.style.display = 'block';
+        }
+        
+        // Обработчик кнопки поддержки
+        supportButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Создаем временный input для копирования
+            const tempInput = document.createElement('input');
+            tempInput.value = 'https://neuron-p2p.ru';
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                // Пытаемся скопировать
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    // Показываем уведомление
+                    copyNotification.style.opacity = '1';
+                    setTimeout(() => {
+                        copyNotification.style.opacity = '0';
+                    }, 2000);
+                } else {
+                    alert('Не удалось скопировать ссылку. Скопируйте вручную: https://neuron-p2p.ru');
+                }
+            } catch (err) {
+                alert('Ошибка при копировании. Скопируйте вручную: https://neuron-p2p.ru');
+            }
+            
+            // Удаляем временный input
+            document.body.removeChild(tempInput);
+        });
+
+        // Обработчики событий
+        playButton.addEventListener('click', () => {
+            mainMenu.style.display = 'none';
+            gameContainer.style.display = 'block';
+            initGame();
+        });
+        
+        settingsButton.addEventListener('click', () => {
+            mainMenu.style.display = 'none';
+            settingsMenu.style.display = 'block';
+        });
+        
+        exitButton.addEventListener('click', () => {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                window.close();
+            }
+        });
+        
+        backButton.addEventListener('click', () => {
+            settingsMenu.style.display = 'none';
+            mainMenu.style.display = 'block';
+        });
+        
+        restartButton.addEventListener('click', () => {
+            gameOverMenu.style.display = 'none';
+            gameContainer.style.display = 'block';
+            initGame();
+        });
+        
+        mainMenuButton.addEventListener('click', () => {
+            gameOverMenu.style.display = 'none';
+            mainMenu.style.display = 'block';
+        });
+        
+        themeSwitch.addEventListener('change', () => {
+            isDarkTheme = themeSwitch.checked;
+            document.body.classList.toggle('dark-theme', isDarkTheme);
+            localStorage.setItem('snakeTheme', isDarkTheme ? 'dark' : 'light');
+            
+            // Перерисовываем игру при смене темы
+            if (gameContainer.style.display === 'block') {
+                drawGame();
+            }
+        });
+        
+        difficultySelect.addEventListener('change', () => {
+            gameSpeed = parseInt(difficultySelect.value);
+            localStorage.setItem('snakeDifficulty', gameSpeed);
+            
+            // Перезапускаем игру при изменении сложности
+            if (gameStarted) {
+                clearInterval(gameInterval);
+                gameInterval = setInterval(gameLoop, gameSpeed);
+            }
+        });
+        
+        // Управление с клавиатуры
+        document.addEventListener('keydown', (e) => {
+            if (!gameStarted && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                startGame();
+            }
+            
+            switch (e.key) {
+                case 'ArrowUp': if (direction !== 'down') nextDirection = 'up'; break;
+                case 'ArrowDown': if (direction !== 'up') nextDirection = 'down'; break;
+                case 'ArrowLeft': if (direction !== 'right') nextDirection = 'left'; break;
+                case 'ArrowRight': if (direction !== 'left') nextDirection = 'right'; break;
+            }
+        });
+        
+        // Мобильное управление
+        upBtn.addEventListener('click', () => {
+            if (!gameStarted) startGame();
+            if (direction !== 'down') nextDirection = 'up';
+        });
+        
+        downBtn.addEventListener('click', () => {
+            if (!gameStarted) startGame();
+            if (direction !== 'up') nextDirection = 'down';
+        });
+        
+        leftBtn.addEventListener('click', () => {
+            if (!gameStarted) startGame();
+            if (direction !== 'right') nextDirection = 'left';
+        });
+        
+        rightBtn.addEventListener('click', () => {
+            if (!gameStarted) startGame();
+            if (direction !== 'left') nextDirection = 'right';
+        });
+        
+        // Загрузка настроек
+        function loadSettings() {
+            // Тема
+            const savedTheme = localStorage.getItem('snakeTheme');
+            if (savedTheme === 'dark') {
+                isDarkTheme = true;
+                document.body.classList.add('dark-theme');
+                themeSwitch.checked = true;
+            }
+            
+            // Сложность
+            const savedDifficulty = localStorage.getItem('snakeDifficulty');
+            if (savedDifficulty) {
+                gameSpeed = parseInt(savedDifficulty);
+                difficultySelect.value = gameSpeed;
+            }
+        }
+        
+        // Адаптация под мобильные устройства
+        function handleResize() {
+            if (window.innerWidth <= 768) {
+                const size = Math.min(window.innerWidth - 40, 400);
+                canvas.width = size - (size % gridSize);
+                canvas.height = size - (size % gridSize);
+            } else {
+                canvas.width = 400;
+                canvas.height = 400;
+            }
+            
+            if (gameContainer.style.display === 'block') {
+                initGame();
+            }
+        }
+        
+        // Инициализация при загрузке
+        window.addEventListener('load', () => {
+            loadSettings();
+            handleResize();
+        });
+        
+        window.addEventListener('resize', handleResize);
+    </script>
+</body>
+</html>
