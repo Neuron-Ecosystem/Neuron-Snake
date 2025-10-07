@@ -304,6 +304,7 @@
             transition: opacity 0.3s;
             z-index: 1000;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-weight: 600;
         }
 
         .neuron-badge {
@@ -371,9 +372,9 @@
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.18 5 4.05 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                     </svg>
                 </a>
-                <button class="footer-button ecosystem-button" id="support-button">?</button>
+                <button class="footer-button ecosystem-button" id="support-button" title="Скопировать email поддержки">?</button>
             </div>
-            <div class="copy-notification" id="copy-notification">Скопировано!</div>
+            <div class="copy-notification" id="copy-notification">Email скопирован!</div>
         </div>
         
         <!-- Меню настроек -->
@@ -582,34 +583,45 @@
             gameOverMenu.style.display = 'block';
         }
         
-        // Обработчик кнопки поддержки
+        // Обработчик кнопки поддержки - копирование email
         supportButton.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // Создаем временный input для копирования
-            const tempInput = document.createElement('input');
-            tempInput.value = 'https://neuron-p2p.ru';
-            document.body.appendChild(tempInput);
-            tempInput.select();
+            const email = 'wertq6306@gmail.com';
             
-            try {
-                // Пытаемся скопировать
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    // Показываем уведомление
-                    copyNotification.style.opacity = '1';
-                    setTimeout(() => {
-                        copyNotification.style.opacity = '0';
-                    }, 2000);
-                } else {
-                    alert('Не удалось скопировать ссылку. Скопируйте вручную: https://neuron-p2p.ru');
+            // Современный способ копирования
+            navigator.clipboard.writeText(email).then(() => {
+                // Показываем уведомление
+                copyNotification.textContent = 'Email скопирован!';
+                copyNotification.style.opacity = '1';
+                setTimeout(() => {
+                    copyNotification.style.opacity = '0';
+                }, 2000);
+            }).catch(() => {
+                // Fallback для старых браузеров
+                const tempInput = document.createElement('input');
+                tempInput.value = email;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        copyNotification.textContent = 'Email скопирован!';
+                        copyNotification.style.opacity = '1';
+                        setTimeout(() => {
+                            copyNotification.style.opacity = '0';
+                        }, 2000);
+                    } else {
+                        alert('Не удалось скопировать email. Скопируйте вручную: wertq6306@gmail.com');
+                    }
+                } catch (err) {
+                    alert('Ошибка при копировании. Скопируйте вручную: wertq6306@gmail.com');
                 }
-            } catch (err) {
-                alert('Ошибка при копировании. Скопируйте вручную: https://neuron-p2p.ru');
-            }
-            
-            // Удаляем временный input
-            document.body.removeChild(tempInput);
+                
+                // Удаляем временный input
+                document.body.removeChild(tempInput);
+            });
         });
 
         // Обработчики событий
